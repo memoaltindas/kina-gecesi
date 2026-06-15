@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="tr" class="locked">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kına Gecesi · İbrahim &amp; Şüheda</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,500;1,600;1,700&family=Ovo&display=swap" rel="stylesheet">
+<style>
+:root{
+  --kina-black:#0b0707;
+  --kina-black-deep:#050303;
+  --kina-red:#b3122a;
+  --kina-red-bright:#e0432f;
+  --kina-red-dark:#4a0a12;
+  --kina-white:#f6ece2;
+  --kina-white-dim:rgba(246,236,226,0.65);
+  --pattern-url:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='96' height='96' viewBox='0 0 96 96'%3E%3Cg fill='none' stroke='%23b3122a' stroke-opacity='0.07' stroke-width='1'%3E%3Cpath d='M48 4 L92 48 L48 92 L4 48 Z'/%3E%3Cpath d='M48 20 L76 48 L48 76 L20 48 Z'/%3E%3Ccircle cx='48' cy='48' r='2.5'/%3E%3C/g%3E%3C/svg%3E");
+}
+*{box-sizing:border-box;}
+html{ background:var(--kina-black-deep); }
+html.locked, html.locked body{ height:100%; overflow:hidden; }
+body{margin:0;padding:0;background:var(--kina-black); color:var(--kina-white); font-family:'Ovo','Cormorant Garamond',serif;}
+
+/* ================= GATE ================= */
+#gate{
+  position:relative;
+  height:100vh;
+  height:100dvh;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:flex-end;
+  padding-bottom:64px;
+  cursor:pointer;
+  overflow:hidden;
+  background:var(--kina-black-deep);
+}
+.gate-bg{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  z-index:0;
+  pointer-events:none;
+}
+.gate-overlay{
+  position:absolute;
+  inset:0;
+  z-index:1;
+  pointer-events:none;
+  background:
+    linear-gradient(180deg, rgba(5,3,3,0.30) 0%, rgba(5,3,3,0.25) 45%, rgba(5,3,3,0.88) 100%),
+    radial-gradient(ellipse 90% 70% at 50% 100%, rgba(74,10,18,0.55), transparent 60%);
+}
+
+.flare{
+  position:absolute;
+  inset:0;
+  background:radial-gradient(circle at 50% 60%, rgba(255,210,150,0.95), rgba(224,67,47,0.35) 35%, transparent 70%);
+  opacity:0;
+  pointer-events:none;
+  z-index:5;
+}
+#gate.flaring .flare{ animation:flare-burst 0.7s ease-out forwards; }
+@keyframes flare-burst{
+  0%{ opacity:0; }
+  35%{ opacity:1; }
+  100%{ opacity:0; }
+}
+
+/* ---------- GATE TEXT ---------- */
+.gate-hint{
+  position:relative;
+  z-index:2;
+  text-align:center;
+  font-family:'Cormorant Garamond',serif;
+  font-style:italic;
+  font-weight:500;
+  font-size:clamp(17px,4.2vw,22px);
+  letter-spacing:1px;
+  color:var(--kina-white-dim);
+  animation:hint-pulse 2.8s ease-in-out infinite;
+  padding:0 24px;
+}
+.gate-hint b{
+  display:block;
+  font-style:normal;
+  font-weight:600;
+  font-size:clamp(28px,7vw,40px);
+  letter-spacing:6px;
+  text-transform:uppercase;
+  color:var(--kina-white);
+  margin-bottom:10px;
+  text-shadow:0 0 18px rgba(224,67,47,0.35);
+}
+@keyframes hint-pulse{
+  0%,100%{ opacity:0.55; }
+  50%{ opacity:1; }
+}
+
+/* ================= CONTENT ================= */
+#content{
+  position:relative;
+  padding:64px 24px 90px;
+  text-align:center;
+  background-color:var(--kina-black-deep);
+  background-image:
+    radial-gradient(ellipse 80% 30% at 50% 0%, rgba(179,18,42,0.18), transparent 60%),
+    var(--pattern-url);
+  background-size:auto, 96px 96px;
+}
+
+.ornament{
+  width:min(70vw,220px);
+  margin:0 auto 22px;
+  opacity:0.9;
+}
+.ornament path{ fill:none; stroke:var(--kina-red); stroke-width:1.4; }
+.ornament circle{ fill:var(--kina-red); }
+
+.eyebrow{
+  font-family:'Cormorant Garamond',serif;
+  font-style:italic;
+  font-size:15px;
+  letter-spacing:4px;
+  text-transform:uppercase;
+  color:var(--kina-red-bright);
+  margin:0 0 6px;
+}
+h1.kina-title{
+  font-family:'Cormorant Garamond',serif;
+  font-style:italic;
+  font-weight:600;
+  font-size:clamp(40px,11vw,68px);
+  margin:0 0 14px;
+  letter-spacing:1px;
+  color:var(--kina-white);
+}
+.couple-names{
+  font-family:'Cormorant Garamond',serif;
+  font-style:italic;
+  font-weight:500;
+  font-size:clamp(20px,5.5vw,30px);
+  letter-spacing:2px;
+  color:var(--kina-white-dim);
+  margin:0 0 36px;
+}
+.couple-names span{ color:var(--kina-red-bright); }
+
+/* countdown clock (red variant) */
+.countdown-wrapper{
+  position:relative;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  margin:10px auto 42px;
+  width:min(58vw,210px);
+  height:min(58vw,210px);
+}
+.countdown-clock{ position:absolute; inset:0; width:100%; height:100%; opacity:0.35; }
+.countdown-clock circle{ stroke:var(--kina-red); fill:none; }
+.countdown-clock text{ fill:var(--kina-red-bright); font-family:'Cormorant Garamond',serif; font-weight:600; }
+.countdown-clock .tick{ stroke:var(--kina-red); }
+.secondhand{ transform-origin:105px 105px; animation:tick 60s linear infinite; }
+@keyframes tick{ to{ transform:rotate(360deg); } }
+
+.countdown-container{
+  position:relative; z-index:1;
+  display:flex; gap:8px; align-items:flex-start;
+}
+.countdown-container .num{
+  font-family:'Cormorant Garamond',serif;
+  font-weight:600;
+  font-size:clamp(28px,7.5vw,40px);
+  color:var(--kina-white);
+  text-align:center;
+  min-width:46px;
+}
+.countdown-container .lbl{
+  display:block;
+  font-family:'Ovo',serif;
+  font-size:11px;
+  letter-spacing:2px;
+  text-transform:uppercase;
+  color:var(--kina-red-bright);
+  margin-top:6px;
+}
+.countdown-container .sep{
+  font-size:14px;
+  color:var(--kina-red);
+  align-self:center;
+  margin-top:13px;
+}
+
+.divider{
+  width:120px; height:1px;
+  margin:30px auto 0;
+  background:linear-gradient(to right, transparent, var(--kina-red), transparent);
+}
+
+.venue{
+  font-family:'Ovo',serif;
+  font-size:15px;
+  line-height:1.9;
+  color:var(--kina-white-dim);
+  letter-spacing:0.5px;
+}
+.venue b{
+  display:block;
+  font-family:'Cormorant Garamond',serif;
+  font-style:italic;
+  font-weight:600;
+  font-size:22px;
+  color:var(--kina-white);
+  margin-bottom:6px;
+}
+
+/* ---------- invitation card ---------- */
+.card{
+  position:relative;
+  margin:54px -24px 0;
+  padding:64px 24px;
+  background:
+    radial-gradient(ellipse 70% 55% at 50% 38%, rgba(224,67,47,0.18), transparent 70%),
+    linear-gradient(160deg, #4d0f1d 0%, #2c0712 55%, #16040a 100%),
+    var(--pattern-url);
+  background-size:auto, auto, 90px 90px;
+  border-top:1px solid rgba(224,67,47,0.2);
+  border-bottom:1px solid rgba(224,67,47,0.2);
+}
+.card-inner{
+  position:relative;
+  max-width:420px;
+  margin:0 auto;
+  padding:46px 26px;
+  border:1px solid rgba(246,236,226,0.16);
+}
+.card-corner{
+  position:absolute;
+  width:22px; height:22px;
+  border:1px solid var(--kina-red-bright);
+  opacity:0.75;
+}
+.card-corner.tl{ top:-1px; left:-1px; border-right:none; border-bottom:none; }
+.card-corner.tr{ top:-1px; right:-1px; border-left:none; border-bottom:none; }
+.card-corner.bl{ bottom:-1px; left:-1px; border-right:none; border-top:none; }
+.card-corner.br{ bottom:-1px; right:-1px; border-left:none; border-top:none; }
+
+.card-names{
+  font-family:'Cormorant Garamond',serif;
+  font-style:italic;
+  font-weight:600;
+  font-size:clamp(32px,8vw,46px);
+  color:var(--kina-white);
+  letter-spacing:1px;
+  margin:0 0 26px;
+}
+.card-families{
+  display:flex;
+  justify-content:center;
+  gap:46px;
+  font-family:'Ovo',serif;
+  font-size:13px;
+  color:var(--kina-white-dim);
+  margin-bottom:30px;
+}
+.card-families div{ display:flex; flex-direction:column; align-items:center; }
+.card-families b{
+  display:block; margin-top:8px;
+  font-weight:700; letter-spacing:2px;
+  color:var(--kina-white);
+}
+.card-text{
+  font-family:'Ovo',serif;
+  font-size:14px;
+  line-height:1.8;
+  color:var(--kina-white-dim);
+  margin:0 0 30px;
+}
+.card-date{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:18px;
+  font-family:'Ovo',serif;
+  font-size:13px;
+  letter-spacing:2px;
+  text-transform:uppercase;
+  color:var(--kina-white-dim);
+  margin-bottom:24px;
+}
+.card-date .day-num{
+  font-family:'Cormorant Garamond',serif;
+  font-style:italic;
+  font-weight:600;
+  font-size:26px;
+  letter-spacing:0;
+  text-transform:none;
+  color:var(--kina-white);
+}
+.card-date .day-num span{
+  font-size:12px;
+  letter-spacing:3px;
+  margin-left:4px;
+  text-transform:uppercase;
+  color:var(--kina-white-dim);
+  font-style:normal;
+}
+.card-date-sep{
+  width:1px; height:28px;
+  background:rgba(246,236,226,0.2);
+}
+.card-venue{
+  font-family:'Ovo',serif;
+  font-size:13px;
+  line-height:1.9;
+  letter-spacing:0.5px;
+  color:var(--kina-white-dim);
+  margin-bottom:26px;
+}
+.card-ornament{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:14px;
+}
+.card-ornament .line{ width:46px; height:1px; background:rgba(224,67,47,0.4); }
+.card-ornament .diamond{ width:7px; height:7px; border:1px solid var(--kina-red-bright); transform:rotate(45deg); }
+
+.section-title{
+  font-family:'Cormorant Garamond',serif;
+  font-style:italic;
+  font-weight:600;
+  font-size:clamp(28px,7vw,38px);
+  color:var(--kina-white);
+  margin:54px 0 32px;
+}
+
+/* program section with video background */
+.program{
+  position:relative;
+  margin:0 -24px -90px;
+  padding:46px 24px 160px;
+  overflow:hidden;
+}
+.program-bg{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  z-index:0;
+}
+.program-overlay{
+  position:absolute;
+  inset:0;
+  z-index:1;
+  background:
+    linear-gradient(180deg, rgba(5,3,3,0.62) 0%, rgba(11,7,7,0.88) 100%),
+    var(--pattern-url);
+  background-size:auto, 96px 96px;
+}
+.program > .section-title,
+.program > .timeline,
+.program > .program-note{
+  position:relative;
+  z-index:2;
+}
+.program > .section-title{ margin-top:0; }
+
+/* program timeline */
+.timeline{
+  max-width:380px;
+  margin:0 auto;
+  text-align:left;
+}
+.t-row{
+  display:grid;
+  grid-template-columns:64px 24px 1fr;
+  align-items:center;
+  min-height:64px;
+}
+.t-time{
+  font-family:'Cormorant Garamond',serif;
+  font-style:italic;
+  font-weight:600;
+  font-size:20px;
+  color:var(--kina-white);
+  text-align:right;
+  padding-right:14px;
+}
+.t-rail{ position:relative; height:100%; display:flex; justify-content:center; }
+.t-rail::before{
+  content:'';
+  position:absolute;
+  top:0; bottom:0; left:50%;
+  width:1px;
+  background:rgba(179,18,42,0.35);
+  transform:translateX(-50%);
+}
+.t-row:first-child .t-rail::before{ top:50%; }
+.t-row:last-child .t-rail::before{ bottom:50%; }
+.t-dot{
+  position:relative; z-index:1;
+  width:8px; height:8px;
+  background:var(--kina-red-bright);
+  transform:rotate(45deg);
+  box-shadow:0 0 8px rgba(224,67,47,0.6);
+}
+.t-label{
+  font-family:'Cormorant Garamond',serif;
+  font-style:italic;
+  font-size:18px;
+  color:var(--kina-white-dim);
+  padding-left:16px;
+}
+.program-note{
+  font-family:'Ovo',serif;
+  font-size:13px;
+  line-height:1.8;
+  color:rgba(246,236,226,0.45);
+  margin:30px auto 0;
+  max-width:380px;
+}
+</style>
+</head>
+<body>
+
+<section id="gate">
+  <video class="gate-bg" autoplay muted loop playsinline preload="auto">
+    <source src="assets/gate-bg.mp4" type="video/mp4">
+  </video>
+  <div class="gate-overlay"></div>
+  <div class="flare"></div>
+
+  <div class="gate-hint">
+    <b>Kına Gecesi</b>
+    Davetiyeyi açmak için aleve dokunun
+  </div>
+</section>
+
+<main id="content">
+
+  <svg class="ornament" viewBox="0 0 200 60" xmlns="http://www.w3.org/2000/svg">
+    <path d="M2,30 H70 M130,30 H198"/>
+    <path d="M70,30 L85,18 L100,30 L115,18 L130,30"/>
+    <path d="M100,30 L100,12"/>
+    <circle cx="100" cy="9" r="3"/>
+    <circle cx="85" cy="18" r="2"/>
+    <circle cx="115" cy="18" r="2"/>
+  </svg>
+
+  <p class="eyebrow">Birlikte kutlayalım</p>
+  <h1 class="kina-title">Kına Gecesi</h1>
+  <p class="couple-names"><span>İbrahim</span> &amp; <span>Şüheda</span></p>
+
+  <div class="countdown-wrapper">
+    <svg class="countdown-clock" viewBox="0 0 210 210" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="105" cy="105" r="92" stroke-width="1"/>
+      <circle cx="105" cy="105" r="84" stroke-width="1"/>
+      <g class="tick" stroke-width="2">
+        <line x1="105" y1="13" x2="105" y2="23"/>
+        <line x1="105" y1="187" x2="105" y2="197"/>
+        <line x1="13" y1="105" x2="23" y2="105"/>
+        <line x1="187" y1="105" x2="197" y2="105"/>
+      </g>
+      <g font-size="13" text-anchor="middle" dominant-baseline="middle"></g>
+      <g class="secondhand" stroke="#e0432f" stroke-width="2" stroke-linecap="round">
+        <line x1="105" y1="105" x2="105" y2="38"/>
+      </g>
+      <circle cx="105" cy="105" r="3.5" fill="#e0432f"/>
+    </svg>
+    <div class="countdown-container">
+      <div><span class="num" id="k-days">00</span><span class="lbl">Gün</span></div>
+      <div class="sep">❖</div>
+      <div><span class="num" id="k-hours">00</span><span class="lbl">Saat</span></div>
+      <div class="sep">❖</div>
+      <div><span class="num" id="k-minutes">00</span><span class="lbl">Dakika</span></div>
+      <div class="sep">❖</div>
+      <div><span class="num" id="k-seconds">00</span><span class="lbl">Saniye</span></div>
+    </div>
+  </div>
+
+  <p class="venue">
+    <b>29 Ekim 2026 · 18:00</b>
+    Köşk Event Halle<br>
+    Deutschstraße 7, 1230 Wien
+  </p>
+
+  <section class="card">
+    <div class="card-inner">
+      <span class="card-corner tl"></span>
+      <span class="card-corner tr"></span>
+      <span class="card-corner bl"></span>
+      <span class="card-corner br"></span>
+
+      <p class="card-names">İbrahim &amp; Şüheda</p>
+
+      <div class="card-families">
+        <div><span>Mithad &amp; Tuba</span><b>GÜNEŞ</b></div>
+        <div><span>Özkan &amp; Sevda</span><b>AVCI</b></div>
+      </div>
+
+      <p class="card-text">Bu özel günümüzde, mutluluğumuzu sizinle<br>paylaşmak bizi onurlandıracaktır.</p>
+
+      <div class="card-date">
+        <span>Perşembe</span>
+        <span class="card-date-sep"></span>
+        <span class="day-num">29<span>Ekim</span></span>
+        <span class="card-date-sep"></span>
+        <span>18:00</span>
+      </div>
+
+      <p class="card-venue">Köşk Event Halle<br>Deutschstraße 7, 1230 Wien</p>
+
+      <div class="card-ornament">
+        <span class="line"></span><span class="diamond"></span><span class="line"></span>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <section class="program">
+    <video class="program-bg" autoplay muted loop playsinline preload="auto">
+      <source src="assets/program-bg.mp4" type="video/mp4">
+    </video>
+    <div class="program-overlay"></div>
+
+    <h2 class="section-title">Program</h2>
+    <div class="timeline">
+      <div class="t-row">
+        <span class="t-time">18:00</span>
+        <span class="t-rail"><span class="t-dot"></span></span>
+        <span class="t-label">Karşılama</span>
+      </div>
+      <div class="t-row">
+        <span class="t-time">19:00</span>
+        <span class="t-rail"><span class="t-dot"></span></span>
+        <span class="t-label">Kına Töreni</span>
+      </div>
+      <div class="t-row">
+        <span class="t-time">20:00</span>
+        <span class="t-rail"><span class="t-dot"></span></span>
+        <span class="t-label">Halaylar &amp; Oyunlar</span>
+      </div>
+      <div class="t-row">
+        <span class="t-time">21:00</span>
+        <span class="t-rail"><span class="t-dot"></span></span>
+        <span class="t-label">Yemek &amp; Eğlence</span>
+      </div>
+    </div>
+    <p class="program-note">* Program detayları yakında güncellenecektir.</p>
+  </section>
+
+</main>
+
+<script>
+(function(){
+  var html = document.documentElement;
+  var gate = document.getElementById('gate');
+  var content = document.getElementById('content');
+
+  var numerals = ['XII','I','II','III','IV','V','VI','VII','VIII','IX','X','XI'];
+  var clockG = document.querySelector('.countdown-clock g[font-size="13"]');
+  numerals.forEach(function(n, i){
+    var angle = (i / 12) * 2 * Math.PI - Math.PI/2;
+    var r = 72;
+    var x = 105 + r * Math.cos(angle);
+    var y = 105 + r * Math.sin(angle);
+    var t = document.createElementNS('http://www.w3.org/2000/svg','text');
+    t.setAttribute('x', x.toFixed(1));
+    t.setAttribute('y', y.toFixed(1));
+    t.textContent = n;
+    clockG.appendChild(t);
+  });
+
+  document.querySelectorAll('.program-bg, .gate-bg').forEach(function(v){ v.playbackRate = 0.6; });
+
+  function openInvite(){
+    if(!html.classList.contains('locked')) return;
+    gate.classList.add('flaring');
+    setTimeout(function(){
+      html.classList.remove('locked');
+      content.scrollIntoView({behavior:'smooth', block:'start'});
+    }, 320);
+  }
+  gate.addEventListener('click', openInvite);
+  gate.tabIndex = 0;
+  gate.addEventListener('keypress', function(e){ if(e.key==='Enter'||e.key===' ') openInvite(); });
+
+  // Countdown to 29.10.2026 18:00
+  var target = new Date(2026, 9, 29, 18, 0, 0).getTime();
+  function pad(n){ return String(n).padStart(2,'0'); }
+  function tick(){
+    var now = Date.now();
+    var d = Math.max(0, target - now);
+    var days = Math.floor(d/(1000*60*60*24));
+    var hours = Math.floor((d%(1000*60*60*24))/(1000*60*60));
+    var mins = Math.floor((d%(1000*60*60))/(1000*60));
+    var secs = Math.floor((d%(1000*60))/1000);
+    document.getElementById('k-days').textContent = pad(days);
+    document.getElementById('k-hours').textContent = pad(hours);
+    document.getElementById('k-minutes').textContent = pad(mins);
+    document.getElementById('k-seconds').textContent = pad(secs);
+  }
+  tick();
+  setInterval(tick, 1000);
+})();
+</script>
+</body>
+</html>
