@@ -32,7 +32,7 @@ body{margin:0;padding:0;background:var(--kina-black); color:var(--kina-white); f
   flex-direction:column;
   align-items:center;
   justify-content:flex-end;
-  padding-bottom:140px;
+  padding-bottom:72px;
   cursor:pointer;
   overflow:hidden;
   background:var(--kina-black-deep);
@@ -68,12 +68,12 @@ body{margin:0;padding:0;background:var(--kina-black); color:var(--kina-white); f
 }
 #gate-flame{
   position:absolute;
-  width:min(90vw,480px);
-  height:min(90vw,480px);
-  bottom:60px;
+  width:min(70vw,360px);
+  height:min(160vw,820px);
+  bottom:-220px;
   left:50%;
   transform:translateX(-50%);
-  background:radial-gradient(circle at 50% 65%, rgba(255,210,100,0.28) 0%, rgba(224,67,47,0.18) 32%, transparent 68%);
+  background:radial-gradient(ellipse 65% 100% at 50% 88%, rgba(255,210,100,0.30) 0%, rgba(224,67,47,0.20) 22%, transparent 62%);
   pointer-events:none;
   z-index:3;
 }
@@ -746,9 +746,28 @@ if(window.VanillaTilt){
   });
 }
 
-/* ── 3. GSAP SCROLLTRIGGER — PROGRAM TIMELINE ── */
+/* ── 3. GSAP SCROLLTRIGGER — CARD ZOOM + PROGRAM TIMELINE ── */
 if(window.gsap && window.ScrollTrigger){
   gsap.registerPlugin(ScrollTrigger);
+
+  /* Card zooms in as you scroll onto it */
+  gsap.fromTo('.card', {
+    scale: 0.72,
+    opacity: 0,
+    y: 60
+  }, {
+    scale: 1,
+    opacity: 1,
+    y: 0,
+    duration: 0.9,
+    ease: 'power3.out',
+    scrollTrigger:{
+      trigger: '.card',
+      start: 'top 92%',
+      end: 'top 40%',
+      scrub: false
+    }
+  });
 
   gsap.from('.program .section-title', {
     y: 24,
