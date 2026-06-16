@@ -56,6 +56,39 @@ body{margin:0;padding:0;background:var(--kina-black); color:var(--kina-white); f
     radial-gradient(ellipse 90% 70% at 50% 100%, rgba(74,10,18,0.55), transparent 60%);
 }
 
+#ember-canvas{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  z-index:2;
+  pointer-events:none;
+  touch-action:none;
+  user-select:none;
+}
+#gate-flame{
+  position:absolute;
+  width:min(80vw,420px);
+  height:min(80vw,420px);
+  bottom:-80px;
+  left:50%;
+  transform:translateX(-50%);
+  background:radial-gradient(circle at 50% 65%, rgba(255,210,100,0.28) 0%, rgba(224,67,47,0.18) 32%, transparent 68%);
+  pointer-events:none;
+  z-index:3;
+  will-change:transform;
+}
+.gate-name{
+  display:block;
+  font-family:'Cormorant Garamond',serif;
+  font-style:italic;
+  font-weight:500;
+  font-size:clamp(20px,5.5vw,30px);
+  letter-spacing:3px;
+  color:var(--kina-red-bright);
+  margin-bottom:6px;
+  opacity:0.9;
+}
 .flare{
   position:absolute;
   inset:0;
@@ -74,7 +107,7 @@ body{margin:0;padding:0;background:var(--kina-black); color:var(--kina-white); f
 /* ---------- GATE TEXT ---------- */
 .gate-hint{
   position:relative;
-  z-index:2;
+  z-index:3;
   text-align:center;
   font-family:'Cormorant Garamond',serif;
   font-style:italic;
@@ -417,6 +450,7 @@ h1.kina-title{
   color:var(--kina-white-dim);
   padding-left:16px;
 }
+.t-row{ will-change:transform,opacity; }
 .program-note{
   font-family:'Ovo',serif;
   font-size:13px;
@@ -434,9 +468,12 @@ h1.kina-title{
     <source src="assets/gate-bg.mp4" type="video/mp4">
   </video>
   <div class="gate-overlay"></div>
+  <canvas id="ember-canvas"></canvas>
   <div class="flare"></div>
 
+  <div id="gate-flame"></div>
   <div class="gate-hint">
+    <span class="gate-name">Şüheda'nın</span>
     <b>Kına Gecesi</b>
     Davetiyeyi açmak için aleve dokunun
   </div>
@@ -585,12 +622,37 @@ h1.kina-title{
     gate.classList.add('flaring');
     setTimeout(function(){
       html.classList.remove('locked');
-      content.scrollIntoView({behavior:'smooth', block:'start'});
+      if(window.ScrollTrigger) ScrollTrigger.refresh();
+      setTimeout(function(){
+        content.scrollIntoView({behavior:'smooth', block:'start'});
+      }, 60);
     }, 320);
   }
   gate.addEventListener('click', openInvite);
   gate.tabIndex = 0;
   gate.addEventListener('keypress', function(e){ if(e.key==='Enter'||e.key===' ') openInvite(); });
+
+  // Gyroscope (mobile) + mouse parallax (desktop)
+  window._gy = {tx:0, ty:0, cx:0, cy:0};
+  function _gyHandle(e){
+    window._gy.tx = Math.max(-1, Math.min(1, (e.gamma||0) / 38));
+    window._gy.ty = Math.max(-1, Math.min(1, ((e.beta||90) - 90) / 38));
+  }
+  function _gyInit(){
+    if(typeof DeviceOrientationEvent !== 'undefined' && typeof DeviceOrientationEvent.requestPermission === 'function'){
+      DeviceOrientationEvent.requestPermission().then(function(s){
+        if(s === 'granted') window.addEventListener('deviceorientation', _gyHandle);
+      }).catch(function(){});
+    } else {
+      window.addEventListener('deviceorientation', _gyHandle);
+    }
+  }
+  gate.addEventListener('touchstart', _gyInit, {once:true});
+  gate.addEventListener('mousemove', function(e){
+    if(!html.classList.contains('locked')) return;
+    window._gy.tx = (e.clientX / window.innerWidth  - 0.5) * 2;
+    window._gy.ty = (e.clientY / window.innerHeight - 0.5) * 2;
+  });
 
   // Countdown to 29.10.2026 18:00
   var target = new Date(2026, 9, 29, 18, 0, 0).getTime();
@@ -610,6 +672,166 @@ h1.kina-title{
   tick();
   setInterval(tick, 1000);
 })();
+</script>
+
+<!-- CDNs -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script src="https://unpkg.com/vanilla-tilt@1.8.1/dist/vanilla-tilt.min.js"></script>
+
+<script>
+/* ── 1. THREE.JS EMBER PARTICLES ── */
+if(window.THREE)(function(){
+  var canvas = document.getElementById('ember-canvas');
+  var W = window.innerWidth, H = window.innerHeight;
+  var renderer = new THREE.WebGLRenderer({canvas:canvas, alpha:true, antialias:false});
+  renderer.setSize(W, H);
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+  var scene = new THREE.Scene();
+  var cam = new THREE.PerspectiveCamera(60, W/H, 0.1, 100);
+  cam.position.z = 5;
+
+  // glow sprite texture
+  var t2d = document.createElement('canvas');
+  t2d.width = t2d.height = 64;
+  var tc = t2d.getContext('2d');
+  var gr = tc.createRadialGradient(32,32,0, 32,32,32);
+  gr.addColorStop(0,   'rgba(255,220,130,1)');
+  gr.addColorStop(0.2, 'rgba(224,67,47,0.85)');
+  gr.addColorStop(0.55,'rgba(179,18,42,0.35)');
+  gr.addColorStop(1,   'rgba(0,0,0,0)');
+  tc.fillStyle = gr;
+  tc.arc(32,32,32,0,Math.PI*2);
+  tc.fill();
+  var tex = new THREE.CanvasTexture(t2d);
+
+  var N = 200;
+  var pos   = new Float32Array(N*3);
+  var vel   = new Float32Array(N);
+  var drift = new Float32Array(N);
+
+  function resetP(i){
+    pos[i*3]   = (Math.random()-0.5)*14;
+    pos[i*3+1] = -7 - Math.random()*3;
+    pos[i*3+2] = (Math.random()-0.5)*1.5;
+    vel[i]     = 0.01 + Math.random()*0.02;
+    drift[i]   = (Math.random()-0.5)*0.007;
+  }
+  for(var i=0;i<N;i++){
+    resetP(i);
+    pos[i*3+1] = (Math.random()-0.5)*14; // scatter on first load
+  }
+
+  var geo = new THREE.BufferGeometry();
+  geo.setAttribute('position', new THREE.BufferAttribute(pos,3));
+
+  var mat = new THREE.PointsMaterial({
+    size: 0.22,
+    map: tex,
+    transparent: true,
+    blending: THREE.AdditiveBlending,
+    depthWrite: false,
+    sizeAttenuation: true
+  });
+  scene.add(new THREE.Points(geo, mat));
+
+  var flameEl = document.getElementById('gate-flame');
+  function loop(){
+    requestAnimationFrame(loop);
+    // Lerp gyro values for smooth movement
+    var gy = window._gy || {tx:0,ty:0,cx:0,cy:0};
+    gy.cx += (gy.tx - gy.cx) * 0.07;
+    gy.cy += (gy.ty - gy.cy) * 0.07;
+    // Move particles with gyro-shifted gravity
+    for(var j=0;j<N;j++){
+      pos[j*3]   += drift[j] + gy.cx * 0.014;
+      pos[j*3+1] += vel[j]   - gy.cy * 0.007;
+      if(pos[j*3+1] > 7) resetP(j);
+    }
+    geo.attributes.position.needsUpdate = true;
+    renderer.render(scene, cam);
+    // Move flame glow with gyro
+    if(flameEl){
+      flameEl.style.transform =
+        'translateX(calc(-50% + ' + (gy.cx * 80).toFixed(1) + 'px))' +
+        ' translateY(' + (gy.cy * 40).toFixed(1) + 'px)';
+    }
+  }
+  loop();
+
+  window.addEventListener('resize', function(){
+    W = window.innerWidth; H = window.innerHeight;
+    cam.aspect = W/H;
+    cam.updateProjectionMatrix();
+    renderer.setSize(W, H);
+  });
+}());
+
+/* ── 2. VANILLA-TILT ON INVITATION CARD ── */
+if(window.VanillaTilt){
+  VanillaTilt.init(document.querySelector('.card-inner'), {
+    max: 7,
+    speed: 600,
+    glare: true,
+    'max-glare': 0.12,
+    gyroscope: true,
+    perspective: 900
+  });
+}
+
+/* ── 3. GSAP SCROLLTRIGGER — PROGRAM TIMELINE ── */
+if(window.gsap && window.ScrollTrigger){
+  gsap.registerPlugin(ScrollTrigger);
+
+  gsap.from('.program .section-title', {
+    y: 24,
+    opacity: 0,
+    duration: 0.9,
+    ease: 'power2.out',
+    scrollTrigger:{
+      trigger: '.program',
+      start: 'top 88%'
+    }
+  });
+
+  gsap.from('.t-row', {
+    x: -44,
+    opacity: 0,
+    duration: 0.65,
+    stagger: 0.18,
+    ease: 'power2.out',
+    scrollTrigger:{
+      trigger: '.timeline',
+      start: 'top 85%'
+    }
+  });
+
+  gsap.from('.t-dot', {
+    scale: 0,
+    duration: 0.4,
+    stagger: 0.18,
+    delay: 0.2,
+    ease: 'back.out(2.5)',
+    scrollTrigger:{
+      trigger: '.timeline',
+      start: 'top 85%'
+    }
+  });
+
+  gsap.from('.program-note', {
+    opacity: 0,
+    y: 12,
+    duration: 0.6,
+    delay: 0.8,
+    ease: 'power1.out',
+    scrollTrigger:{
+      trigger: '.timeline',
+      start: 'top 85%'
+    }
+  });
+}
 </script>
 </body>
 </html>
