@@ -138,11 +138,14 @@ body{margin:0;padding:0;background:var(--kina-black); color:var(--kina-white); f
   position:relative;
   padding:64px 24px 90px;
   text-align:center;
-  background-color:var(--kina-black-deep);
+  background-color:#070105;
   background-image:
-    radial-gradient(ellipse 80% 30% at 50% 0%, rgba(179,18,42,0.18), transparent 60%),
+    radial-gradient(ellipse 130% 55% at 50% 5%,  rgba(130,8,24,0.50), transparent 65%),
+    radial-gradient(ellipse 70%  40% at 15% 55%, rgba(74,10,18,0.28),  transparent 60%),
+    radial-gradient(ellipse 70%  40% at 85% 55%, rgba(74,10,18,0.28),  transparent 60%),
+    radial-gradient(ellipse 55%  30% at 50% 95%, rgba(179,18,42,0.18), transparent 55%),
     var(--pattern-url);
-  background-size:auto, 96px 96px;
+  background-size:auto,auto,auto,auto,96px 96px;
 }
 
 .ornament{
@@ -182,50 +185,74 @@ h1.kina-title{
 }
 .couple-names span{ color:var(--kina-red-bright); }
 
-/* countdown clock (red variant) */
-.countdown-wrapper{
+/* ── RING COUNTDOWN ── */
+.rings-countdown{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:clamp(14px,4vw,28px);
+  max-width:300px;
+  margin:4px auto 44px;
+}
+@media(min-width:430px){
+  .rings-countdown{ grid-template-columns:repeat(4,1fr); max-width:460px; }
+}
+.ring-unit{
   position:relative;
+  width:100%;
+  aspect-ratio:1;
+}
+.ring-svg{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  transform:rotate(-90deg);
+  overflow:visible;
+}
+.ring-outer{ fill:none; stroke:rgba(179,18,42,0.08); stroke-width:1; }
+.ring-track{ fill:none; stroke:rgba(179,18,42,0.14); stroke-width:2; }
+.ring-fill{
+  fill:none;
+  stroke:var(--kina-red-bright);
+  stroke-width:2;
+  stroke-linecap:round;
+  stroke-dasharray:289;
+  stroke-dashoffset:0;
+  transition:stroke-dashoffset 0.65s cubic-bezier(.4,0,.2,1);
+  filter:drop-shadow(0 0 5px rgba(224,67,47,0.6));
+}
+.ring-center{
+  position:absolute;
+  inset:0;
   display:flex;
-  justify-content:center;
+  flex-direction:column;
   align-items:center;
-  margin:10px auto 42px;
-  width:min(58vw,210px);
-  height:min(58vw,210px);
+  justify-content:center;
 }
-.countdown-clock{ position:absolute; inset:0; width:100%; height:100%; opacity:0.35; }
-.countdown-clock circle{ stroke:var(--kina-red); fill:none; }
-.countdown-clock text{ fill:var(--kina-red-bright); font-family:'Cormorant Garamond',serif; font-weight:600; }
-.countdown-clock .tick{ stroke:var(--kina-red); }
-.secondhand{ transform-origin:105px 105px; animation:tick 60s linear infinite; }
-@keyframes tick{ to{ transform:rotate(360deg); } }
-
-.countdown-container{
-  position:relative; z-index:1;
-  display:flex; gap:8px; align-items:flex-start;
-}
-.countdown-container .num{
+.ring-num{
   font-family:'Cormorant Garamond',serif;
+  font-style:italic;
   font-weight:600;
-  font-size:clamp(28px,7.5vw,40px);
+  font-size:clamp(22px,5.5vw,34px);
   color:var(--kina-white);
-  text-align:center;
-  min-width:46px;
+  line-height:1;
+  text-shadow:0 0 12px rgba(224,67,47,0.3);
 }
-.countdown-container .lbl{
-  display:block;
+.ring-lbl{
   font-family:'Ovo',serif;
-  font-size:11px;
-  letter-spacing:2px;
+  font-size:clamp(8px,1.8vw,10px);
+  letter-spacing:2.5px;
   text-transform:uppercase;
   color:var(--kina-red-bright);
-  margin-top:6px;
+  margin-top:5px;
+  opacity:0.8;
 }
-.countdown-container .sep{
-  font-size:14px;
-  color:var(--kina-red);
-  align-self:center;
-  margin-top:13px;
+@keyframes ring-pulse{
+  0%  { filter:drop-shadow(0 0 5px rgba(224,67,47,0.6)); }
+  45% { filter:drop-shadow(0 0 12px rgba(255,200,100,0.95)); }
+  100%{ filter:drop-shadow(0 0 5px rgba(224,67,47,0.6)); }
 }
+.ring-unit.pulsing .ring-fill{ animation:ring-pulse 0.55s ease-out; }
 
 .divider{
   width:120px; height:1px;
@@ -525,38 +552,52 @@ h1.kina-title{
   <h1 class="kina-title">Kına Gecesi</h1>
   <p class="couple-names"><span>İbrahim</span> &amp; <span>Şüheda</span></p>
 
-  <div class="countdown-wrapper">
-    <svg class="countdown-clock" viewBox="0 0 210 210" xmlns="http://www.w3.org/2000/svg">
-      <circle cx="105" cy="105" r="92" stroke-width="1"/>
-      <circle cx="105" cy="105" r="84" stroke-width="1"/>
-      <g class="tick" stroke-width="2">
-        <line x1="105" y1="13" x2="105" y2="23"/>
-        <line x1="105" y1="187" x2="105" y2="197"/>
-        <line x1="13" y1="105" x2="23" y2="105"/>
-        <line x1="187" y1="105" x2="197" y2="105"/>
-      </g>
-      <g font-size="13" text-anchor="middle" dominant-baseline="middle"></g>
-      <g class="secondhand" stroke="#e0432f" stroke-width="2" stroke-linecap="round">
-        <line x1="105" y1="105" x2="105" y2="38"/>
-      </g>
-      <circle cx="105" cy="105" r="3.5" fill="#e0432f"/>
-    </svg>
-    <div class="countdown-container">
-      <div><span class="num" id="k-days">00</span><span class="lbl">Gün</span></div>
-      <div class="sep">❖</div>
-      <div><span class="num" id="k-hours">00</span><span class="lbl">Saat</span></div>
-      <div class="sep">❖</div>
-      <div><span class="num" id="k-minutes">00</span><span class="lbl">Dakika</span></div>
-      <div class="sep">❖</div>
-      <div><span class="num" id="k-seconds">00</span><span class="lbl">Saniye</span></div>
+  <div class="rings-countdown">
+    <div class="ring-unit" id="ring-unit-days">
+      <svg class="ring-svg" viewBox="0 0 110 110" xmlns="http://www.w3.org/2000/svg">
+        <circle class="ring-outer" cx="55" cy="55" r="52"/>
+        <circle class="ring-track" cx="55" cy="55" r="46"/>
+        <circle class="ring-fill"  cx="55" cy="55" r="46" id="ring-days"/>
+      </svg>
+      <div class="ring-center">
+        <span class="ring-num" id="k-days">000</span>
+        <span class="ring-lbl">Gün</span>
+      </div>
+    </div>
+    <div class="ring-unit" id="ring-unit-hours">
+      <svg class="ring-svg" viewBox="0 0 110 110" xmlns="http://www.w3.org/2000/svg">
+        <circle class="ring-outer" cx="55" cy="55" r="52"/>
+        <circle class="ring-track" cx="55" cy="55" r="46"/>
+        <circle class="ring-fill"  cx="55" cy="55" r="46" id="ring-hours"/>
+      </svg>
+      <div class="ring-center">
+        <span class="ring-num" id="k-hours">00</span>
+        <span class="ring-lbl">Saat</span>
+      </div>
+    </div>
+    <div class="ring-unit" id="ring-unit-mins">
+      <svg class="ring-svg" viewBox="0 0 110 110" xmlns="http://www.w3.org/2000/svg">
+        <circle class="ring-outer" cx="55" cy="55" r="52"/>
+        <circle class="ring-track" cx="55" cy="55" r="46"/>
+        <circle class="ring-fill"  cx="55" cy="55" r="46" id="ring-mins"/>
+      </svg>
+      <div class="ring-center">
+        <span class="ring-num" id="k-minutes">00</span>
+        <span class="ring-lbl">Dakika</span>
+      </div>
+    </div>
+    <div class="ring-unit" id="ring-unit-secs">
+      <svg class="ring-svg" viewBox="0 0 110 110" xmlns="http://www.w3.org/2000/svg">
+        <circle class="ring-outer" cx="55" cy="55" r="52"/>
+        <circle class="ring-track" cx="55" cy="55" r="46"/>
+        <circle class="ring-fill"  cx="55" cy="55" r="46" id="ring-secs"/>
+      </svg>
+      <div class="ring-center">
+        <span class="ring-num" id="k-seconds">00</span>
+        <span class="ring-lbl">Saniye</span>
+      </div>
     </div>
   </div>
-
-  <p class="venue">
-    <b>29 Ekim 2026 · 18:00</b>
-    Köşk Event Halle<br>
-    Deutschstraße 7, 1230 Wien
-  </p>
 
   <div class="divider"></div>
 
@@ -633,18 +674,42 @@ h1.kina-title{
 
   // Countdown to 29.10.2026 18:00
   var target = new Date(2026, 9, 29, 18, 0, 0).getTime();
+  var C = 289; // ring circumference (2π × r46)
+  var rDays  = document.getElementById('ring-days');
+  var rHours = document.getElementById('ring-hours');
+  var rMins  = document.getElementById('ring-mins');
+  var rSecs  = document.getElementById('ring-secs');
+  var suSecs = document.getElementById('ring-unit-secs');
+  var prevSec = -1;
+
   function pad(n){ return String(n).padStart(2,'0'); }
+  function setRing(el, frac){
+    if(el) el.setAttribute('stroke-dashoffset', (C*(1-Math.max(0,Math.min(1,frac)))).toFixed(1));
+  }
   function tick(){
     var now = Date.now();
-    var d = Math.max(0, target - now);
-    var days = Math.floor(d/(1000*60*60*24));
+    var d   = Math.max(0, target - now);
+    var days  = Math.floor(d/(1000*60*60*24));
     var hours = Math.floor((d%(1000*60*60*24))/(1000*60*60));
-    var mins = Math.floor((d%(1000*60*60))/(1000*60));
-    var secs = Math.floor((d%(1000*60))/1000);
-    document.getElementById('k-days').textContent = pad(days);
-    document.getElementById('k-hours').textContent = pad(hours);
+    var mins  = Math.floor((d%(1000*60*60))/(1000*60));
+    var secs  = Math.floor((d%(1000*60))/1000);
+
+    document.getElementById('k-days').textContent    = pad(days);
+    document.getElementById('k-hours').textContent   = pad(hours);
     document.getElementById('k-minutes').textContent = pad(mins);
     document.getElementById('k-seconds').textContent = pad(secs);
+
+    setRing(rDays,  days / 500);
+    setRing(rHours, hours / 24);
+    setRing(rMins,  mins  / 60);
+    setRing(rSecs,  secs  / 60);
+
+    if(secs !== prevSec && suSecs){
+      suSecs.classList.remove('pulsing');
+      void suSecs.offsetWidth;
+      suSecs.classList.add('pulsing');
+      prevSec = secs;
+    }
   }
   tick();
   setInterval(tick, 1000);
