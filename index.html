@@ -32,7 +32,7 @@ body{margin:0;padding:0;background:var(--kina-black); color:var(--kina-white); f
   flex-direction:column;
   align-items:center;
   justify-content:flex-end;
-  padding-bottom:64px;
+  padding-bottom:140px;
   cursor:pointer;
   overflow:hidden;
   background:var(--kina-black-deep);
@@ -68,15 +68,14 @@ body{margin:0;padding:0;background:var(--kina-black); color:var(--kina-white); f
 }
 #gate-flame{
   position:absolute;
-  width:min(80vw,420px);
-  height:min(80vw,420px);
-  bottom:-80px;
+  width:min(90vw,480px);
+  height:min(90vw,480px);
+  bottom:60px;
   left:50%;
   transform:translateX(-50%);
   background:radial-gradient(circle at 50% 65%, rgba(255,210,100,0.28) 0%, rgba(224,67,47,0.18) 32%, transparent 68%);
   pointer-events:none;
   z-index:3;
-  will-change:transform;
 }
 .gate-name{
   display:block;
@@ -632,28 +631,6 @@ h1.kina-title{
   gate.tabIndex = 0;
   gate.addEventListener('keypress', function(e){ if(e.key==='Enter'||e.key===' ') openInvite(); });
 
-  // Gyroscope (mobile) + mouse parallax (desktop)
-  window._gy = {tx:0, ty:0, cx:0, cy:0};
-  function _gyHandle(e){
-    window._gy.tx = Math.max(-1, Math.min(1, (e.gamma||0) / 38));
-    window._gy.ty = Math.max(-1, Math.min(1, ((e.beta||90) - 90) / 38));
-  }
-  function _gyInit(){
-    if(typeof DeviceOrientationEvent !== 'undefined' && typeof DeviceOrientationEvent.requestPermission === 'function'){
-      DeviceOrientationEvent.requestPermission().then(function(s){
-        if(s === 'granted') window.addEventListener('deviceorientation', _gyHandle);
-      }).catch(function(){});
-    } else {
-      window.addEventListener('deviceorientation', _gyHandle);
-    }
-  }
-  gate.addEventListener('touchstart', _gyInit, {once:true});
-  gate.addEventListener('mousemove', function(e){
-    if(!html.classList.contains('locked')) return;
-    window._gy.tx = (e.clientX / window.innerWidth  - 0.5) * 2;
-    window._gy.ty = (e.clientY / window.innerHeight - 0.5) * 2;
-  });
-
   // Countdown to 29.10.2026 18:00
   var target = new Date(2026, 9, 29, 18, 0, 0).getTime();
   function pad(n){ return String(n).padStart(2,'0'); }
@@ -737,27 +714,15 @@ if(window.THREE)(function(){
   });
   scene.add(new THREE.Points(geo, mat));
 
-  var flameEl = document.getElementById('gate-flame');
   function loop(){
     requestAnimationFrame(loop);
-    // Lerp gyro values for smooth movement
-    var gy = window._gy || {tx:0,ty:0,cx:0,cy:0};
-    gy.cx += (gy.tx - gy.cx) * 0.07;
-    gy.cy += (gy.ty - gy.cy) * 0.07;
-    // Move particles with gyro-shifted gravity
     for(var j=0;j<N;j++){
-      pos[j*3]   += drift[j] + gy.cx * 0.014;
-      pos[j*3+1] += vel[j]   - gy.cy * 0.007;
+      pos[j*3]   += drift[j];
+      pos[j*3+1] += vel[j];
       if(pos[j*3+1] > 7) resetP(j);
     }
     geo.attributes.position.needsUpdate = true;
     renderer.render(scene, cam);
-    // Move flame glow with gyro
-    if(flameEl){
-      flameEl.style.transform =
-        'translateX(calc(-50% + ' + (gy.cx * 80).toFixed(1) + 'px))' +
-        ' translateY(' + (gy.cy * 40).toFixed(1) + 'px)';
-    }
   }
   loop();
 
